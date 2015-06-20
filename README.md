@@ -11,7 +11,7 @@
         <div class="col-lg-6">
             <h1>SOAP</h1>
             username is root, password is F0T349M3RTo2
-            <a href="{% url "soap" %}"><h4>http://localhost:8000/opensooq</h4></a>
+            <a href="{% url "soap" %}"><h5>http://localhost:8000/opensooq</h5></a>
         </div>
         <div class="col-lg-6">
             <h1>REST</h1>
