@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>OpenSooq Demo</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{{ STATIC_URL }}css/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ STATIC_URL }}css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{{ STATIC_URL }}css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        body {
+            padding-top: 70px;
+            /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
+        }
+        .margin-top{
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">OpenSooq Demo</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="{% url "django.contrib.auth.views.logout" %}">Logout</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1></h1>
+
+            <p class="lead">The web services are available as a SOAP service or REST services</p>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-lg-6">
+            <h1>SOAP</h1>
+            username is root, password is F0T349M3RTo2
+            <a href="{% url "soap" %}"><h3>click here for SOAP service</h3></a>
+        </div>
+        <div class="col-lg-6">
+            <h1>REST</h1>
+            <ul>
+                <li>
+                    <strong>Add post</strong>(title, description, type)<strong>login required</strong><br>
+                    example: http://localhost:8000/add/test_title/test_desc/test_type
+                </li>
+                <li class="margin-top">
+                    <strong>Remove post</strong>(post_id)<strong>login required</strong><br>
+                    example: http://localhost:8000/delete/0
+                </li>
+                <li class="margin-top">
+                    <strong>update post</strong>(post_id, title, description, type)<strong>login required</strong><br>
+                    example: http://localhost:8000/update/0/test_title/test_desc/test_type
+                </li>
+                <li class="margin-top">
+                    <strong>search</strong>(term)<strong>login not required</strong><br>
+                    example: http://localhost:8000/search/asd
+                </li>
+                <li class="margin-top">
+                    <strong>list</strong>()<strong>login not required</strong><br>
+                    example: http://localhost:8000/list
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+<!-- jQuery -->
+<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+
+<!-- Metis Menu Plugin JavaScript -->
+<script src="{{ STATIC_URL }}js/metisMenu.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="{{ STATIC_URL }}js/sb-admin-2.js"></script>
+
+</body>
+
+</html>

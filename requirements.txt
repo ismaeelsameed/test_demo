@@ -1,0 +1,9 @@
+Django==1.7.3
+argparse==1.2.1
+wsgiref==0.1.2
+SOAPpy==0.12.22
+lxml==3.4.0
+spyne==2.11.0
+suds==0.4
+elasticsearch
+git+https://github.com/liberation/django_elasticsearch.git
