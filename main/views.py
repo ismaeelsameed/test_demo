@@ -1,20 +1,16 @@
 # encoding: utf8
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-import json
-from django.db.models import Q
-
 from spyne.model.primitive import Unicode
 from spyne.model.complex import Iterable
 from spyne.service import ServiceBase
 from spyne.decorator import rpc
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
-# Create your views here.
 from main.models import Post
+from elasticsearch import Elasticsearch
 
 
+# Create your views here.
 @login_required
 def home(request):
     return render(request, "home.html")
@@ -77,54 +73,69 @@ class PostService(ServiceBase):
     @rpc(Unicode, _returns=Iterable(Unicode))
     def SearchPost(ctx, term):
         if term != "":
-            new_post = Post.es.search(term)
-            if not new_post:
+            es = Elasticsearch()
+            result = es.search(index="my-posts", q=term)
+            if not result["hits"]["hits"]:
                 yield "There are no results that match your search"
             else:
+                hits = []
                 # yield new_post.es.serialize()
-                for post in new_post.model.objects.all():
-                    yield str(post.id)
-                    yield post.title
-                    yield post.description
-                    yield post.type
+                for hit in result["hits"]["hits"]:
+                    dic = {}
+                    dic["id"] = hit["_id"]
+                    dic["score"] = str(hit["_score"])
+                    dic["title"] = hit["_source"]["title"]
+                    dic["description"] = hit["_source"]["description"]
+                    dic["type"] = hit["_source"]["type"]
+                    hits.append(dic)
+                yield str(hits).strip('[]')
         else:
             yield "please write your search term"
 
     @rpc(_returns=Iterable(Unicode))
     def ListPost(ctx):
-        posts = Post.es.all()
-        if not posts:
+        es = Elasticsearch()
+        result = es.search(index="my-posts", body={"query": {"match_all": {}}})
+        if not result["hits"]["hits"]:
             yield "There are no posts yet"
         else:
-            for post in posts.model.objects.all():
-                yield str(post.id)
-                yield post.title
-                yield post.description
-                yield post.type
+            hits = []
+            for hit in result["hits"]["hits"]:
+                dic = {}
+                dic["id"] = hit["_id"]
+                dic["score"] = str(hit["_score"])
+                dic["title"] = hit["_source"]["title"]
+                dic["description"] = hit["_source"]["description"]
+                dic["type"] = hit["_source"]["type"]
+                hits.append(dic)
+            yield str(hits).strip('[]')
 
 
 def search_post(request, term):
-    new_post = Post.es.search(term)
-    return HttpResponse(new_post)
+    es = Elasticsearch()
+    result = es.search(index="my-posts", q=term)
+    return JsonResponse(result)
 
 
 def list_post(request):
-    new_post = Post.es.all()
-    return HttpResponse(new_post)
+    es = Elasticsearch()
+    result = es.search(index="my-posts", body={"query": {"match_all": {}}})
+    return JsonResponse(result)
 
 
 @login_required
 def add_post(request, title, description, type):
     new_post = Post.objects.create(title=title, description=description, type=type)
-    new_post = Post.es.get(pk=new_post.id)
-    new_post['status'] = "post has been added successfully"
-    return JsonResponse(new_post)
+    es = Elasticsearch()
+    post = es.index(index="my-posts", doc_type="demo", id=new_post.id,
+                    body={"title": new_post.title, "description": new_post.description, "type": new_post.type})
+    return JsonResponse(post)
 
 
 @login_required
 def update_post(request, post_id, title, description, type):
     try:
-        post = Post.objects.get(pk = post_id)
+        post = Post.objects.get(pk=post_id)
     except:
         response = {}
         response['status'] = "no post with such id"
@@ -133,8 +144,8 @@ def update_post(request, post_id, title, description, type):
     post.description = description
     post.type = type
     post.save()
-    new_post = Post.es.get(pk=post.id)
-    new_post['status'] = "post has been updated successfully"
+    es = Elasticsearch()
+    new_post = es.get(index="my-posts", doc_type='demo', id=post.id)
     return JsonResponse(new_post)
 
 
