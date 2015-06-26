@@ -1,11 +1,13 @@
 # encoding: utf8
+import json
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.shortcuts import render
 from spyne.model.primitive import Unicode
 from spyne.model.complex import Iterable
 from spyne.service import ServiceBase
 from spyne.decorator import rpc
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from main.models import Post
 from elasticsearch import Elasticsearch
 
@@ -114,14 +116,13 @@ class PostService(ServiceBase):
 def search_post(request, term):
     es = Elasticsearch()
     result = es.search(index="my-posts", q=term)
-    return JsonResponse(result)
+    return HttpResponse(json.dumps(result))
 
 
 def list_post(request):
     es = Elasticsearch()
     result = es.search(index="my-posts", body={"query": {"match_all": {}}})
-    return JsonResponse(result)
-
+    return HttpResponse(json.dumps(result))
 
 @login_required
 def add_post(request, title, description, type):
@@ -129,7 +130,7 @@ def add_post(request, title, description, type):
     es = Elasticsearch()
     post = es.index(index="my-posts", doc_type="demo", id=new_post.id,
                     body={"title": new_post.title, "description": new_post.description, "type": new_post.type})
-    return JsonResponse(post)
+    return HttpResponse(json.dumps(post))
 
 
 @login_required
@@ -139,14 +140,14 @@ def update_post(request, post_id, title, description, type):
     except:
         response = {}
         response['status'] = "no post with such id"
-        return JsonResponse(response)
+        return HttpResponse(json.dumps(response))
     post.title = title
     post.description = description
     post.type = type
     post.save()
     es = Elasticsearch()
     new_post = es.get(index="my-posts", doc_type='demo', id=post.id)
-    return JsonResponse(new_post)
+    return HttpResponse(json.dumps(new_post))
 
 
 @login_required
@@ -159,4 +160,4 @@ def delete_post(request, id):
     except:
         response = {}
         response['status'] = "no post with such id"
-    return JsonResponse(response)
+    return HttpResponse(json.dumps(response))
